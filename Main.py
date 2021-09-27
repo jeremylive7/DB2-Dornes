@@ -85,16 +85,19 @@ def showPriTable():
 
     for i in result:
 
-        T.insert(tk.END,i)
+        T.insert(tk.END,i)                  #Se insertan los privilegios de la tabla en la caja de texto 
         T.insert(tk.END,"\n")
 
 """
 Muestra privilegios de la tabla en el schema especifico de su dicha db
 """
 def showPriTableSQL():
+
+    # Posicion de combo box y magnitud
     T = tk.Text(root, height = 10, width = 10)
     T.place(x = 900, y = 70)
 
+     # Conexion a la base de datos SQL server
     conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
                             "SERVER="+direccion_servidor+
                             ";DATABASE="+nombre_bd+
@@ -105,7 +108,7 @@ def showPriTableSQL():
     command = "select permission_name from sys.database_permissions where major_id = object_id('customer_services."
     command += c2.get() + "')"
 
-    cursor.execute(command)
+    cursor.execute(command)             #Se ejecuta el comando generado
 
     result = cursor.fetchall()
 
@@ -113,7 +116,7 @@ def showPriTableSQL():
 
     for i in result:
 
-        T.insert(tk.END,i)
+        T.insert(tk.END,i)              #Se insertan los privilegios de la tabla en la caja de texto 
         T.insert(tk.END,"\n")
     
 
@@ -196,6 +199,7 @@ Muestra los comandos que son generados y los ejecuta
 """
 def getComandos():
 
+    # Posicion de combo box y magnitud
     T = tk.Text(root, height = 33, width = 120)
     T.place(x = 10, y = 200)
     
@@ -206,14 +210,15 @@ def getComandos():
             T.insert(tk.END,comando)
             T.insert(tk.END,"\n")
 
+            # Conexion a la base de datos postgresql
             conn = psycopg2.connect(dbname =name, user = user, password = pas, host = host )
             cur = conn.cursor()
             
-            cur.execute(comando)
+            cur.execute(comando)                 #Se ejecuta el comando generado
             
-            result = cur.fetchall()[0][0]
+            result = cur.fetchall()[0][0]        #Se obtiene el resultado del proceso generado
             
-            T.insert(tk.END,result)
+            T.insert(tk.END,result)              #Se pone el resultado de la generacion del codigo en la caja de texto
             T.insert(tk.END,"\n")
 
             cur.execute(result)
@@ -225,18 +230,19 @@ def getComandos():
             T.insert(tk.END,comando)
             T.insert(tk.END,"\n")
 
+            # Conexion a la base de datos SQL server
             conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
                                     "SERVER="+direccion_servidor+
                                     ";DATABASE="+nombre_bd+
                                     ";Trusted_Connection=yes;")
 
             cursor = conexion.cursor()
-            cursor.execute(comando)
+            cursor.execute(comando)                 #Se ejecuta el comando generado
             print("Se ejecuto el comando en la base de datos")
 
-            result = cursor.fetchall()[0][0]
+            result = cursor.fetchall()[0][0]         #Se obtiene el resultado del proceso generado
 
-            T.insert(tk.END,result)
+            T.insert(tk.END,result)                  #Se pone el resultado de la generacion del codigo en la caja de texto
             T.insert(tk.END,"\n")
 
 """
@@ -244,6 +250,7 @@ Muestra los comandos que son generados
 """
 def commandGenShow():
 
+    # Posicion de combo box y magnitud
     T = tk.Text(root, height = 33, width = 120)
     T.place(x = 10, y = 200)
     
@@ -254,14 +261,15 @@ def commandGenShow():
             T.insert(tk.END,comando)
             T.insert(tk.END,"\n")
 
+            # Conexion a la base de datos SQL server
             conn = psycopg2.connect(dbname =name, user = user, password = pas, host = host )
             cur = conn.cursor()
             
-            cur.execute(comando)
+            cur.execute(comando)                #Se ejecuta el comando generado
             
-            result = cur.fetchall()[0][0]
+            result = cur.fetchall()[0][0]       #Se obtiene el resultado del proceso generado
             
-            T.insert(tk.END,result)
+            T.insert(tk.END,result)             #Se pone el resultado de la generacion del codigo en la caja de texto
             T.insert(tk.END,"\n")
 
     elif combobox1 == "SQL SERVER":
@@ -270,17 +278,18 @@ def commandGenShow():
             T.insert(tk.END,comando)
             T.insert(tk.END,"\n")
 
+            # Conexion a la base de datos SQL server
             conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
                                     "SERVER="+direccion_servidor+
                                     ";DATABASE="+nombre_bd+
                                     ";Trusted_Connection=yes;")
 
             cursor = conexion.cursor()
-            cursor.execute(comando)
+            cursor.execute(comando)                 #Se ejecuta el comando generado
 
-            result = cursor.fetchall()[0][0]
+            result = cursor.fetchall()[0][0]        #Se obtiene el resultado del proceso generado
 
-            T.insert(tk.END,result)
+            T.insert(tk.END,result)                 #Se pone el resultado de la generacion del codigo en la caja de texto
             T.insert(tk.END,"\n")
 
 """
