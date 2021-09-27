@@ -92,8 +92,8 @@ def showPriTable():
 Muestra privilegios de la tabla en el schema especifico de su dicha db
 """
 def showPriTableSQL():
-    T = tk.Text(root, height = 20, width = 20)
-    T.place(x = 10, y = 100)
+    T = tk.Text(root, height = 10, width = 10)
+    T.place(x = 900, y = 70)
 
     conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
                             "SERVER="+direccion_servidor+
@@ -102,12 +102,12 @@ def showPriTableSQL():
 
     cursor = conexion.cursor()
     
-    command = "SELECT privilege_type FROM information_schema.role_table_grants WHERE table_name='"
-    command += c2.get() + "' and table_schema='public'"
+    command = "select permission_name from sys.database_permissions where major_id = object_id('customer_services."
+    command += c2.get() + "')"
 
     cursor.execute(command)
 
-    result = cursor.fetchall()[0][0]
+    result = cursor.fetchall()
 
     print("Se ejecuto el comando")
 
@@ -196,7 +196,7 @@ Muestra los comandos que son generados y los ejecuta
 """
 def getComandos():
 
-    T = tk.Text(root, height = 40, width = 120)
+    T = tk.Text(root, height = 33, width = 120)
     T.place(x = 10, y = 200)
     
     combobox1 = c1.get()
@@ -244,7 +244,7 @@ Muestra los comandos que son generados
 """
 def commandGenShow():
 
-    T = tk.Text(root, height = 40, width = 120)
+    T = tk.Text(root, height = 33, width = 120)
     T.place(x = 10, y = 200)
     
     combobox1 = c1.get()
