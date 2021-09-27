@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk 
 import psycopg2
+import pyodbc
 
 """
 Accion del boton para decidir que motor de db va usar y 
@@ -12,14 +13,16 @@ def submitact():
     valor_combox1 = c1.get()
     if valor_combox1 == "SQL SERVER":
         # SQL
-        print('SQL SERVER')
+        logSql()
+        banderaMotor = 1
     elif valor_combox1 == "POSTGRESQL":
         # Postgres
+        banderaMotor = 0
         logPosgtre()
 
 
 """
-Metodo para obtener de la base que se va trabajar las tablas existentes.
+Metodo de postgresql para obtener de la base que se va trabajar las tablas existentes.
 Las muestra en el comboBox.
 """
 def logPosgtre():
@@ -65,70 +68,207 @@ Accion del segundo boton para obtener que eligio el usaurio exactamente del CRUD
 """
 def submitact2():
     valor_combox2 = c2.get()
-
+    combobox1 = c1.get()
     if var1.get() == 1:
-        command1 = "select public.genInsProc('public','"
-        command1 += valor_combox2
-        command1 += "');"
-
-        #cur.execute(command1)
-
-        comandos.append(command1)
+        if combobox1 == 'POSTGRESQL':
+            command1 = "select public.genInsProc('public','"
+            command1 += valor_combox2
+            command1 += "');"
+            comandos.append(command1)
+        elif combobox1 == 'SQL SERVER':
+            command1 = "select dbo.insertCrud ('customer_services','"
+            command1 += valor_combox2
+            command1 += "');"
+            comandos.append(command1) 
+     
     
     if var2.get() == 1:
-        command2 = "select public.genSelect('public','"
-        command2 += valor_combox2
-        command2 += "');"
+        if combobox1 == 'POSTGRESQL':
+            command2 = "select public.genSelect('public','"
+            command2 += valor_combox2
+            command2 += "');"
+            comandos.append(command2)
+        elif combobox1 == 'SQL SERVER':
+            command1 = "select dbo.selectCrud ('customer_services','"
+            command1 += valor_combox2
+            command1 += "');"
+            comandos.append(command1)
 
-        #cur.execute(command2)
-
-        comandos.append(command2)
-    
     if var3.get() == 1:
-        command3 = "select public.genUpdate('public','"
-        command3 += valor_combox2
-        command3 += "');"
-
-        #cur.execute(command3)
-
-        comandos.append(command3)
+        if combobox1 == 'POSTGRESQL':
+            command3 = "select public.genUpdate('public','"
+            command3 += valor_combox2
+            command3 += "');"
+            comandos.append(command3)
+        elif combobox1 == 'SQL SERVER':
+            command1 = "select dbo.updateCrud ('customer_services','"
+            command1 += valor_combox2
+            command1 += "');"
+            comandos.append(command1)
 
     if var4.get() == 1:
-        command4 = "select public.genDelete('public','"
-        command4 += valor_combox2
-        command4 += "');"
+        if combobox1 == 'POSTGRESQL':
+            command4 = "select public.genDelete('public','"
+            command4 += valor_combox2
+            command4 += "');"
+            comandos.append(command4)
+        elif combobox1 == 'SQL SERVER':
+            command1 = "select dbo.deleteCrud ('customer_services','"
+            command1 += valor_combox2
+            command1 += "');"
+            comandos.append(command1)
 
-        #cur.execute(command4)
 
-        comandos.append(command4)
-
-    # Boton para procesar mostrar comandos
+    # Boton para procesar mostrar comandos y los ejecuta
     submitbtn = tk.Button(root, text ="Run",
                         bg ='green', command = getComandos)
     submitbtn.place(x = 280, y = 170, width = 55)
 
+    # Boton para procesar mostrar comandos
+    submitbtn = tk.Button(root, text ="Gen",
+                        bg ='orange', command = commandGenShow)
+    submitbtn.place(x = 345, y = 170, width = 55)
+
+"""
+Muestra los comandos que son generados y los ejecuta
+"""
 def getComandos():
 
     T = tk.Text(root, height = 40, width = 120)
     T.place(x = 10, y = 200)
     
-    for comando in comandos:
-    
-        T.insert(tk.END,comando)
-        T.insert(tk.END,"\n")
+    combobox1 = c1.get()
+    if combobox1 == "POSTGRESQL":
+        for comando in comandos:
+        
+            T.insert(tk.END,comando)
+            T.insert(tk.END,"\n")
 
-        conn = psycopg2.connect(dbname =name, user = user, password = pas, host = host )
-        cur = conn.cursor()
-        
-        cur.execute(comando)
-        
-        result = cur.fetchall()[0][0]
-        
-        T.insert(tk.END,result)
-        T.insert(tk.END,"\n")
+            conn = psycopg2.connect(dbname =name, user = user, password = pas, host = host )
+            cur = conn.cursor()
+            
+            cur.execute(comando)
+            
+            result = cur.fetchall()[0][0]
+            
+            T.insert(tk.END,result)
+            T.insert(tk.END,"\n")
 
-        cur.execute(result)
+            cur.execute(result)
+            print("Se ejecuto el commando en la base de datos de dicho motor.")
+
+    elif combobox1 == "SQL SERVER":
+
+        for comando in comandos:
+            T.insert(tk.END,comando)
+            T.insert(tk.END,"\n")
+
+            conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
+                                    "SERVER="+direccion_servidor+
+                                    ";DATABASE="+nombre_bd+
+                                    ";Trusted_Connection=yes;")
+
+            cursor = conexion.cursor()
+            cursor.execute(comando)
+            print("Se ejecuto el comando")
+
+            result = cursor.fetchall()[0][0]
+
+            T.insert(tk.END,result)
+            T.insert(tk.END,"\n")
+
+"""
+Muestra los comandos que son generados
+"""
+def commandGenShow():
+
+    T = tk.Text(root, height = 40, width = 120)
+    T.place(x = 10, y = 200)
     
+    combobox1 = c1.get()
+    if combobox1 == "POSTGRESQL":
+        for comando in comandos:
+        
+            T.insert(tk.END,comando)
+            T.insert(tk.END,"\n")
+
+            conn = psycopg2.connect(dbname =name, user = user, password = pas, host = host )
+            cur = conn.cursor()
+            
+            cur.execute(comando)
+            
+            result = cur.fetchall()[0][0]
+            
+            T.insert(tk.END,result)
+            T.insert(tk.END,"\n")
+
+    elif combobox1 == "SQL SERVER":
+
+        for comando in comandos:
+            T.insert(tk.END,comando)
+            T.insert(tk.END,"\n")
+
+            conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
+                                    "SERVER="+direccion_servidor+
+                                    ";DATABASE="+nombre_bd+
+                                    ";Trusted_Connection=yes;")
+
+            cursor = conexion.cursor()
+            cursor.execute(comando)
+            print("Se ejecuto el comando")
+
+            result = cursor.fetchall()[0][0]
+
+            T.insert(tk.END,result)
+            T.insert(tk.END,"\n")
+
+"""
+Connexion de sql 
+"""
+def connectionSQL():                                    #
+    try:
+        conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
+                                "SERVER="+direccion_servidor+
+                                ";DATABASE="+nombre_bd+
+                                ";Trusted_Connection=yes;")
+        # OK! conexión exitosa
+        cursor = conexion.cursor()
+        cursor.execute("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='customer_services';")
+        
+        row = cursor.fetchone() 
+
+        tables = []
+
+        while row: 
+            tables.append(row[0])
+            row = cursor.fetchone()
+
+        # Combobox
+        c2['values'] = tables   
+        c2['state'] = 'readonly' 
+        c2.pack(fill='x', padx=5, pady=5)
+
+        # CheckBox
+        showCheckBoxs()
+
+        # Boton para procesar consultas
+        submitbtn = tk.Button(root, text ="Tables",
+                            bg ='red', command = submitact2)
+        submitbtn.place(x = 215, y = 170, width = 55)
+
+
+    except Exception as e:
+        # Atrapar error
+        print("Ocurrió un error al conectar a SQL Server: ", e) 
+
+"""
+Metodo de postgresql para obtener de la base que se va trabajar las tablas existentes.
+Las muestra en el comboBox.
+"""
+def logSql():
+    connectionSQL() #Se hace la connection con sql server.
+
+
 
 
 #-------------------------------------------------------------
@@ -154,6 +294,11 @@ s2 = tk.StringVar()
 c2 = ttk.Combobox(root, textvariable=s2)
 resultado = []
 comandos = []
+cursor = []
+banderaMotor = 0
+#SQL
+direccion_servidor = 'DESKTOP-UK4T5SJ\SQLEXPRESS'
+nombre_bd = 'db'    
 
 #Postgresql
 user = "postgres"
@@ -164,7 +309,7 @@ host = "localhost"
 
 # Boton para procesar consultas
 submitbtn = tk.Button(root, text ="Login",
-                      bg ='blue', command = submitact)
+                      bg ='lightblue', command = submitact)
 submitbtn.place(x = 150, y = 170, width = 55)
 
 
