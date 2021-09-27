@@ -232,7 +232,7 @@ def getComandos():
 
             cursor = conexion.cursor()
             cursor.execute(comando)
-            print("Se ejecuto el comando")
+            print("Se ejecuto el comando en la base de datos")
 
             result = cursor.fetchall()[0][0]
 
@@ -277,7 +277,6 @@ def commandGenShow():
 
             cursor = conexion.cursor()
             cursor.execute(comando)
-            print("Se ejecuto el comando")
 
             result = cursor.fetchall()[0][0]
 

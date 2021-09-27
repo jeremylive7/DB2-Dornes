@@ -80,3 +80,45 @@ BEGIN
 END;
 $$ 
 LANGUAGE PLPGSQL ;
+
+
+
+
+
+
+
+
+
+
+create schema customer_services
+
+CREATE TABLE customer_services.jobs(
+    job_id INT PRIMARY KEY IDENTITY,
+    customer_id INT NOT NULL,
+    description VARCHAR(200),
+    created_at DATETIME2 NOT NULL
+);
+
+CREATE TABLE customer_services.hobbies(
+    hobby_id INT PRIMARY KEY IDENTITY,
+    description VARCHAR(200)
+);
+
+
+SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='customer_services'
+
+
+
+
+SELECT * FROM INFORMATION_SCHEMA.TABLES
+
+
+SELECT name FROM sys.databases where database_id > 4;  
+
+
+
+
+
+select permission_name
+from sys.database_permissions
+where major_id = object_id('customer_services.jobs')
