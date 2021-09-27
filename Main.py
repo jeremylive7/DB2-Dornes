@@ -13,11 +13,9 @@ def submitact():
     valor_combox1 = c1.get()
     if valor_combox1 == "SQL SERVER":
         # SQL
-        logSql()
-        banderaMotor = 1
+        connectionSQL() #Se hace la connection con sql server.
     elif valor_combox1 == "POSTGRESQL":
         # Postgres
-        banderaMotor = 0
         logPosgtre()
 
 
@@ -64,11 +62,75 @@ def showCheckBoxs():
     p4.pack()
 
 """
+Muestra privilegios de la tabla en el schema especifico de su dicha db
+"""
+def showPriTable():
+    T = tk.Text(root, height = 10, width = 10)
+    T.place(x = 900, y = 70)
+
+
+    conn = psycopg2.connect(dbname =name, user = user, password = pas, host = host )
+    cursor = conn.cursor()
+    
+    cursor = conn.cursor()
+    
+    command = "SELECT privilege_type FROM information_schema.role_table_grants WHERE table_name='"
+    command += c2.get() + "' and table_schema='public'"
+
+    cursor.execute(command)
+
+    result = cursor.fetchall()
+
+    print("Se ejecuto el comando")
+
+    for i in result:
+
+        T.insert(tk.END,i)
+        T.insert(tk.END,"\n")
+
+"""
+Muestra privilegios de la tabla en el schema especifico de su dicha db
+"""
+def showPriTableSQL():
+    T = tk.Text(root, height = 20, width = 20)
+    T.place(x = 10, y = 100)
+
+    conexion = pyodbc.connect("DRIVER={ODBC Driver 17 for SQL Server};"
+                            "SERVER="+direccion_servidor+
+                            ";DATABASE="+nombre_bd+
+                            ";Trusted_Connection=yes;")
+
+    cursor = conexion.cursor()
+    
+    command = "SELECT privilege_type FROM information_schema.role_table_grants WHERE table_name='"
+    command += c2.get() + "' and table_schema='public'"
+
+    cursor.execute(command)
+
+    result = cursor.fetchall()[0][0]
+
+    print("Se ejecuto el comando")
+
+    for i in result:
+
+        T.insert(tk.END,i)
+        T.insert(tk.END,"\n")
+    
+
+"""
 Accion del segundo boton para obtener que eligio el usaurio exactamente del CRUD y tabla.
 """
 def submitact2():
     valor_combox2 = c2.get()
     combobox1 = c1.get()
+
+    # Mostrar privilegios de la tabla en el schema especifico de su dicha db
+    if combobox1 == 'POSTGRESQL':
+        showPriTable()
+    elif combobox1 == 'SQL SERVER':
+        showPriTableSQL()
+
+    # Obtengo arreglo con los comandos.
     if var1.get() == 1:
         if combobox1 == 'POSTGRESQL':
             command1 = "select public.genInsProc('public','"
@@ -223,6 +285,8 @@ def commandGenShow():
             T.insert(tk.END,"\n")
 
 """
+Metodo de postgresql para obtener de la base que se va trabajar las tablas existentes.
+Las muestra en el comboBox.
 Connexion de sql 
 """
 def connectionSQL():                                    #
@@ -261,12 +325,8 @@ def connectionSQL():                                    #
         # Atrapar error
         print("Ocurrió un error al conectar a SQL Server: ", e) 
 
-"""
-Metodo de postgresql para obtener de la base que se va trabajar las tablas existentes.
-Las muestra en el comboBox.
-"""
-def logSql():
-    connectionSQL() #Se hace la connection con sql server.
+
+    
 
 
 
@@ -295,7 +355,6 @@ c2 = ttk.Combobox(root, textvariable=s2)
 resultado = []
 comandos = []
 cursor = []
-banderaMotor = 0
 #SQL
 direccion_servidor = 'DESKTOP-UK4T5SJ\SQLEXPRESS'
 nombre_bd = 'db'    
