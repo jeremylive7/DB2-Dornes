@@ -1,0 +1,24 @@
+.capa{
+    width: 50%;
+    margin: 25px;
+    padding: 20px;
+}
+
+li{
+    margin-left: 15px;
+    list-style: square;
+    font-size: 4em;
+}
+
+#encabezado_principal
+{
+    color: brown;
+    border: 1pc dashed gray;
+}
+
+#encabezado_principal:hover
+{
+    color: green;
+    border: 1pc dashed gray;
+}
+
